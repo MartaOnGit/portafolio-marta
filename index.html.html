@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marta · Análisis Funcional & Sistemas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1826;
+    --ink-2:#16233A;
+    --paper:#ECE7DC;
+    --paper-2:#DFD9C9;
+    --teal:#2F6F6D;
+    --teal-bright:#4FA6A2;
+    --amber:#C89B3C;
+    --charcoal:#1B2430;
+    --line:rgba(15,24,38,0.16);
+    --line-dark:rgba(236,231,220,0.22);
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--body);
+    color:var(--charcoal);
+    background:var(--paper);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+
+  .wrap{max-width:1120px; margin:0 auto; padding:0 32px;}
+  @media (max-width:640px){ .wrap{padding:0 20px;} }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--teal);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:18px; height:1px;
+    background:var(--teal);
+    display:inline-block;
+  }
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:fixed; top:0; left:0; right:0;
+    z-index:100;
+    background:rgba(236,231,220,0.9);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:1120px; margin:0 auto; padding:16px 32px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  @media (max-width:640px){ .nav-inner{padding:14px 20px;} }
+  .nav-mark{
+    font-family:var(--mono);
+    font-size:0.8rem;
+    letter-spacing:0.08em;
+    display:flex; align-items:center; gap:8px;
+  }
+  .nav-mark .dot{width:7px; height:7px; border-radius:50%; background:var(--amber);}
+  .nav-links{display:flex; gap:28px; font-family:var(--mono); font-size:0.75rem; letter-spacing:0.04em;}
+  .nav-links a{color:var(--charcoal); opacity:0.75; transition:opacity .2s;}
+  .nav-links a:hover{opacity:1; color:var(--teal);}
+  @media (max-width:640px){ .nav-links{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:
+      linear-gradient(var(--line-dark) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-dark) 1px, transparent 1px),
+      var(--ink);
+    background-size:40px 40px, 40px 40px, auto;
+    color:var(--paper);
+    padding:150px 0 90px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(ellipse at 20% 10%, rgba(47,111,109,0.25), transparent 55%);
+    pointer-events:none;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:48px;
+    align-items:center;
+    position:relative;
+    z-index:1;
+  }
+  @media (max-width:880px){ .hero-grid{grid-template-columns:1fr; gap:56px;} }
+
+  .hero h1{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:clamp(2.6rem, 6vw, 4.4rem);
+    line-height:1.02;
+    letter-spacing:-0.02em;
+    margin:18px 0 20px;
+  }
+  .hero h1 span{color:var(--teal-bright);}
+  .hero p.role{
+    font-family:var(--mono);
+    font-size:0.95rem;
+    color:var(--paper);
+    opacity:0.75;
+    margin-bottom:26px;
+    letter-spacing:0.02em;
+  }
+  .hero p.lede{
+    max-width:44ch;
+    font-size:1.02rem;
+    color:var(--paper);
+    opacity:0.82;
+    margin-bottom:34px;
+  }
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--mono);
+    font-size:0.78rem;
+    letter-spacing:0.04em;
+    padding:13px 22px;
+    border-radius:2px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    transition:all .18s ease;
+    border:1px solid transparent;
+  }
+  .btn-primary{background:var(--teal-bright); color:var(--ink);}
+  .btn-primary:hover{background:var(--paper);}
+  .btn-ghost{border:1px solid var(--line-dark); color:var(--paper);}
+  .btn-ghost:hover{border-color:var(--paper); background:rgba(236,231,220,0.06);}
+
+  /* signature diagram */
+  .diagram{position:relative; width:100%; aspect-ratio:1/1; max-width:420px; margin:0 auto;}
+  .diagram svg{width:100%; height:100%; overflow:visible;}
+  .node-label{font-family:var(--mono); font-size:10.5px; fill:var(--paper); letter-spacing:0.02em;}
+  .node-core-label{font-family:var(--display); font-size:15px; font-weight:600; fill:var(--ink);}
+  .diagram-line{stroke:rgba(236,231,220,0.35); stroke-width:1; stroke-dasharray:3 4;}
+  .diagram-node{fill:var(--ink-2); stroke:var(--teal-bright); stroke-width:1.2;}
+
+  /* ---------- SECTION SHARED ---------- */
+  section{padding:96px 0;}
+  @media (max-width:640px){ section{padding:64px 0;} }
+  .section-head{margin-bottom:48px;}
+  .section-head h2{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:clamp(1.8rem, 3.4vw, 2.5rem);
+    letter-spacing:-0.01em;
+    margin-top:14px;
+  }
+
+  /* ---------- SOBRE MI ---------- */
+  .about{background:var(--paper);}
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start;}
+  @media (max-width:880px){ .about-grid{grid-template-columns:1fr; gap:36px;} }
+  .about p{font-size:1.02rem; opacity:0.88; margin-bottom:16px; max-width:52ch;}
+  .about p strong{color:var(--teal); font-weight:600;}
+
+  .tag-group{margin-bottom:22px;}
+  .tag-group h4{
+    font-family:var(--mono); font-size:0.7rem; letter-spacing:0.1em;
+    text-transform:uppercase; opacity:0.55; margin-bottom:10px;
+  }
+  .tags{display:flex; flex-wrap:wrap; gap:8px;}
+  .tag{
+    font-family:var(--mono); font-size:0.76rem;
+    padding:6px 12px; border:1px solid var(--line);
+    color:var(--charcoal); background:var(--paper-2);
+    border-radius:2px;
+  }
+
+  /* ---------- PROYECTOS ---------- */
+  .projects{background:var(--ink); color:var(--paper);}
+  .projects .eyebrow{color:var(--teal-bright);}
+  .projects .eyebrow::before{background:var(--teal-bright);}
+  .project-grid{display:grid; grid-template-columns:1fr 1fr; gap:28px;}
+  @media (max-width:880px){ .project-grid{grid-template-columns:1fr;} }
+
+  .project-card{
+    position:relative;
+    border:1px solid var(--line-dark);
+    padding:32px 28px;
+    background:rgba(236,231,220,0.03);
+  }
+  .project-card::before,
+  .project-card::after{
+    content:""; position:absolute; width:12px; height:12px;
+    border-color:var(--teal-bright); border-style:solid;
+  }
+  .project-card::before{top:-1px; left:-1px; border-width:1px 0 0 1px;}
+  .project-card::after{bottom:-1px; right:-1px; border-width:0 1px 1px 0;}
+
+  .project-index{font-family:var(--mono); font-size:0.72rem; color:var(--teal-bright); letter-spacing:0.08em;}
+  .project-card h3{
+    font-family:var(--display); font-weight:600;
+    font-size:1.4rem; margin:12px 0 14px; letter-spacing:-0.01em;
+  }
+  .project-card p{font-size:0.94rem; opacity:0.82; margin-bottom:18px;}
+  .project-tags{display:flex; flex-wrap:wrap; gap:7px;}
+  .project-tags span{
+    font-family:var(--mono); font-size:0.7rem;
+    padding:4px 9px; border:1px solid var(--line-dark);
+    opacity:0.85;
+  }
+
+  /* ---------- EXPERIENCIA (flujo) ---------- */
+  .experience{background:var(--paper);}
+  .flow{position:relative; padding-left:0;}
+  .flow-step{
+    display:grid;
+    grid-template-columns:100px 1fr;
+    gap:24px;
+    position:relative;
+    padding-bottom:44px;
+  }
+  .flow-step:last-child{padding-bottom:0;}
+  .flow-marker{
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .flow-dot{
+    width:13px; height:13px; border-radius:50%;
+    background:var(--paper); border:2px solid var(--teal);
+    flex-shrink:0;
+  }
+  .flow-step.active .flow-dot{background:var(--amber); border-color:var(--amber);}
+  .flow-connector{
+    width:1px; flex:1;
+    background:repeating-linear-gradient(to bottom, var(--teal) 0 4px, transparent 4px 8px);
+    margin-top:6px;
+  }
+  .flow-step:last-child .flow-connector{display:none;}
+  .flow-tag{font-family:var(--mono); font-size:0.68rem; color:var(--teal); letter-spacing:0.06em; margin-top:2px; text-align:center;}
+  .flow-content h3{font-family:var(--display); font-weight:600; font-size:1.2rem; margin-bottom:6px;}
+  .flow-content .flow-meta{font-family:var(--mono); font-size:0.72rem; opacity:0.55; margin-bottom:10px;}
+  .flow-content p{font-size:0.94rem; opacity:0.85; max-width:56ch;}
+
+  @media (max-width:640px){
+    .flow-step{grid-template-columns:56px 1fr; gap:14px;}
+    .flow-tag{display:none;}
+  }
+
+  /* ---------- HABILIDADES ---------- */
+  .skills{background:var(--paper-2);}
+  .skills-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:32px;}
+  @media (max-width:768px){ .skills-grid{grid-template-columns:1fr; gap:28px;} }
+  .skills-col h4{
+    font-family:var(--mono); font-size:0.72rem; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--teal); margin-bottom:14px;
+    border-bottom:1px solid var(--line); padding-bottom:10px;
+  }
+  .skills-col ul{list-style:none;}
+  .skills-col li{
+    font-size:0.94rem; padding:7px 0;
+    border-bottom:1px dashed var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .skills-col li:last-child{border-bottom:none;}
+  .skills-col li::after{content:"·"; font-family:var(--mono); color:var(--amber);}
+
+  /* ---------- CONTACTO ---------- */
+  .contact{
+    background:var(--ink); color:var(--paper);
+    text-align:left;
+  }
+  .contact .eyebrow{color:var(--teal-bright);}
+  .contact .eyebrow::before{background:var(--teal-bright);}
+  .contact h2{
+    font-family:var(--display); font-weight:600;
+    font-size:clamp(2rem,5vw,3rem); margin:16px 0 20px; letter-spacing:-0.01em;
+    max-width:16ch;
+  }
+  .contact p.lede{opacity:0.78; max-width:48ch; margin-bottom:36px;}
+  .contact-grid{display:grid; grid-template-columns:repeat(3,auto); gap:36px; margin-bottom:8px;}
+  @media (max-width:640px){ .contact-grid{grid-template-columns:1fr; gap:22px;} }
+  .contact-item h5{font-family:var(--mono); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; opacity:0.5; margin-bottom:6px;}
+  .contact-item a, .contact-item span{font-family:var(--body); font-size:1rem;}
+  .contact-item a{color:var(--teal-bright); border-bottom:1px solid transparent;}
+  .contact-item a:hover{border-color:var(--teal-bright);}
+
+  footer{
+    background:var(--ink); color:var(--paper);
+    padding:26px 0; border-top:1px solid var(--line-dark);
+  }
+  .footer-inner{display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:0.72rem; opacity:0.5;}
+  @media (max-width:640px){ .footer-inner{flex-direction:column; gap:8px; text-align:center;} }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-mark"><span class="dot"></span>MARTA · ANÁLISIS FUNCIONAL</div>
+    <nav class="nav-links">
+      <a href="#sobre-mi">Sobre mí</a>
+      <a href="#proyectos">Proyectos</a>
+      <a href="#experiencia">Experiencia</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Perfil profesional</div>
+      <h1>Convierto procesos<br>en <span>sistemas</span> que funcionan.</h1>
+      <p class="role">Ingeniera en Sistemas · Análisis Funcional · Atención al Cliente</p>
+      <p class="lede">Graduada en Ingeniería de Sistemas con experiencia conectando necesidades del negocio con soluciones técnicas claras. Busco aportar esa mirada como Analista Funcional.</p>
+      <div class="hero-ctas">
+        <a href="#proyectos" class="btn btn-primary">Ver proyectos →</a>
+        <a href="#contacto" class="btn btn-ghost">Contactar</a>
+      </div>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 400 400">
+        <!-- connector lines -->
+        <line class="diagram-line" x1="200" y1="200" x2="200" y2="70"/>
+        <line class="diagram-line" x1="200" y1="200" x2="330" y2="150"/>
+        <line class="diagram-line" x1="200" y1="200" x2="330" y2="270"/>
+        <line class="diagram-line" x1="200" y1="200" x2="70" y2="270"/>
+        <line class="diagram-line" x1="200" y1="200" x2="70" y2="150"/>
+
+        <!-- outer nodes -->
+        <rect class="diagram-node" x="140" y="34" width="120" height="42" rx="2"/>
+        <text class="node-label" x="200" y="59" text-anchor="middle">SISTEMAS</text>
+
+        <rect class="diagram-node" x="292" y="130" width="98" height="42" rx="2"/>
+        <text class="node-label" x="341" y="155" text-anchor="middle">FUNCIONAL</text>
+
+        <rect class="diagram-node" x="292" y="250" width="98" height="42" rx="2"/>
+        <text class="node-label" x="341" y="275" text-anchor="middle">PROYECTOS</text>
+
+        <rect class="diagram-node" x="10" y="250" width="98" height="42" rx="2"/>
+        <text class="node-label" x="59" y="275" text-anchor="middle">CLIENTES</text>
+
+        <rect class="diagram-node" x="10" y="130" width="98" height="42" rx="2"/>
+        <text class="node-label" x="59" y="155" text-anchor="middle">NEGOCIO</text>
+
+        <!-- core node -->
+        <circle cx="200" cy="200" r="52" fill="#ECE7DC" stroke="#4FA6A2" stroke-width="1.5"/>
+        <text class="node-core-label" x="200" y="196" text-anchor="middle">Marta</text>
+        <text class="node-label" x="200" y="214" text-anchor="middle" fill="#1B2430" opacity="0.6">nodo central</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="sobre-mi">
+  <div class="wrap about-grid">
+    <div>
+      <div class="eyebrow">Sobre mí</div>
+      <h2 style="font-family:var(--display); font-weight:600; font-size:1.9rem; margin:14px 0 22px;">Del mostrador al modelo de sistema.</h2>
+      <p>Soy <strong>Ingeniera en Sistemas</strong> graduada de la Universidad Americana (UAM), Costa Rica, en 2024. Mi formación técnica se combina con años de experiencia directa en <strong>atención al cliente, ventas e inventario</strong> dentro del negocio familiar de retail de ropa.</p>
+      <p>Esa mezcla —entender al usuario final y traducirlo en requerimientos claros— es exactamente lo que busco aportar como <strong>Analista Funcional</strong>: la persona que conecta lo que el negocio necesita con lo que el sistema puede construir.</p>
+    </div>
+    <div>
+      <div class="tag-group">
+        <h4>Formación</h4>
+        <div class="tags">
+          <span class="tag">Ing. en Sistemas · UAM</span>
+          <span class="tag">Costa Rica · 2024</span>
+        </div>
+      </div>
+      <div class="tag-group">
+        <h4>Área de enfoque</h4>
+        <div class="tags">
+          <span class="tag">Análisis funcional</span>
+          <span class="tag">Levantamiento de requerimientos</span>
+          <span class="tag">Atención al cliente</span>
+        </div>
+      </div>
+      <div class="tag-group">
+        <h4>Idiomas</h4>
+        <div class="tags">
+          <span class="tag">Español · Nativo</span>
+          <span class="tag">Inglés · Básico</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="projects" id="proyectos">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Proyectos</div>
+      <h2>Sistemas diseñados de punta a punta.</h2>
+    </div>
+    <div class="project-grid">
+      <div class="project-card">
+        <div class="project-index">PROYECTO · 01</div>
+        <h3>Plataforma de Pago de Servicios</h3>
+        <p>Sistema académico para la gestión y procesamiento de pagos de servicios, con foco en un flujo de usuario simple y validaciones claras en cada paso de la transacción.</p>
+        <div class="project-tags">
+          <span>Análisis de requerimientos</span>
+          <span>Diseño de flujo</span>
+          <span>Proyecto académico</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-index">PROYECTO · 02</div>
+        <h3>Terapia 360</h3>
+        <p>Sistema de gestión para una clínica de psicología: administración de citas, pacientes y seguimiento clínico, pensado para reducir el trabajo manual del equipo.</p>
+        <div class="project-tags">
+          <span>Gestión de citas</span>
+          <span>Modelo de datos</span>
+          <span>Proyecto académico</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="experience" id="experiencia">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Experiencia</div>
+      <h2>Un recorrido con un mismo hilo conductor.</h2>
+    </div>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-marker">
+          <div class="flow-dot"></div>
+          <div class="flow-connector"></div>
+        </div>
+        <div class="flow-content">
+          <h3>Negocio familiar de retail de ropa</h3>
+          <div class="flow-meta">Atención al cliente · Ventas · Inventario</div>
+          <p>Contacto directo y constante con clientes: entender lo que necesitan, resolver problemas en el momento y mantener el control del inventario.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-marker">
+          <div class="flow-dot"></div>
+          <div class="flow-connector"></div>
+        </div>
+        <div class="flow-content">
+          <h3>Graduación · Ingeniería en Sistemas</h3>
+          <div class="flow-meta">UAM, Costa Rica · 2024</div>
+          <p>Formación en desarrollo de software, análisis de sistemas y gestión de proyectos, aplicada en proyectos como Plataforma de Pago de Servicios y Terapia 360.</p>
+        </div>
+      </div>
+      <div class="flow-step active">
+        <div class="flow-marker">
+          <div class="flow-dot"></div>
+        </div>
+        <div class="flow-content">
+          <h3>Búsqueda activa · Analista Funcional</h3>
+          <div class="flow-meta">Actualmente</div>
+          <p>Uniendo la experiencia con clientes y la formación técnica para aportar como puente entre el negocio y los equipos de desarrollo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="skills">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Habilidades</div>
+      <h2>Lo que pongo sobre la mesa.</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skills-col">
+        <h4>Técnicas</h4>
+        <ul>
+          <li>Análisis de sistemas</li>
+          <li>Levantamiento de requerimientos</li>
+          <li>Modelado de procesos</li>
+          <li>Documentación funcional</li>
+        </ul>
+      </div>
+      <div class="skills-col">
+        <h4>Funcionales</h4>
+        <ul>
+          <li>Gestión de inventario</li>
+          <li>Procesos de venta</li>
+          <li>Seguimiento a clientes</li>
+          <li>Control de calidad</li>
+        </ul>
+      </div>
+      <div class="skills-col">
+        <h4>Blandas</h4>
+        <ul>
+          <li>Comunicación clara</li>
+          <li>Resolución de problemas</li>
+          <li>Atención al detalle</li>
+          <li>Trabajo en equipo</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contacto">
+  <div class="wrap">
+    <div class="eyebrow">Contacto</div>
+    <h2>Hablemos de cómo puedo aportar a tu equipo.</h2>
+    <p class="lede">Disponible para conversar sobre oportunidades como Analista Funcional o roles afines a sistemas y atención al cliente.</p>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <h5>Correo</h5>
+        <a href="mailto:martagarciac52@gmail.com">martagarciac52@gmail.com</a>
+      </div>
+      <div class="contact-item">
+        <h5>LinkedIn</h5>
+        <a href="https://www.linkedin.com/in/stephani-garcia-917021340" target="_blank">www.linkedin.com/in/stephani-garcia-917021340</a>
+      </div>
+      <div class="contact-item">
+        <h5>Ubicación</h5>
+        <span>Costa Rica</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <span>© 2026 Marta</span>
+    <span>Diseñado como sistema, no como plantilla.</span>
+  </div>
+</footer>
+
+</body>
+</html>
